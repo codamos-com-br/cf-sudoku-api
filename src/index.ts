@@ -1,11 +1,5 @@
-export interface Env {}
+import { handleRequest } from "./handler";
 
-export const worker = {
-	async fetch(
-		request: Request,
-		env: Env,
-		ctx: ExecutionContext
-	): Promise<Response> {
-		return new Response(`Hello World from ${request.method}!`);
-	},
-};
+addEventListener("fetch", (ev: FetchEvent) => {
+	ev.respondWith(handleRequest(ev.request));
+});

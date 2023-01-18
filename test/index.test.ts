@@ -1,14 +1,11 @@
-import { worker } from "../src/index";
+import { handleRequest } from "../src/handler";
 
-test("GET /", async () => {
-	const result = await worker.fetch(
-		new Request("http://falcon", { method: "GET" }),
-		{},
-		// eslint-disable-next-line @typescript-eslint/no-explicit-any
-		{} as any
+test("Any other route returns 'Not found'", async () => {
+	const result = await handleRequest(
+		new Request("http://api.codamos.com.br/", { method: "GET" })
 	);
-	expect(result.status).toBe(200);
+	expect(result.status).toBe(404);
 
 	const text = await result.text();
-	expect(text).toBe("Hello World from GET!");
+	expect(text).toBe("Not found");
 });
