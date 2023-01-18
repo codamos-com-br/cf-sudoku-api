@@ -19,10 +19,12 @@ test("Grid to string serialisation", () => {
 });
 
 test("From string deserialisation", () => {
-	const empty = '0'.repeat(81);
-	expect(Grid.fromString(empty)).toEqual(Grid.empty());
+	const empty = "0".repeat(81);
+	const res = Grid.fromString(empty);
+	expect(res.err).toBeNull();
+	expect(res.ok).toEqual(Grid.empty());
 
-	const firstRowFilled = '123456789' + '0'.repeat(72);
+	const firstRowFilled = "123456789" + "0".repeat(72);
 	const frf = Grid.empty()
 		.setNumber(1, 0, 0)
 		.setNumber(2, 1, 0)
@@ -33,15 +35,21 @@ test("From string deserialisation", () => {
 		.setNumber(7, 6, 0)
 		.setNumber(8, 7, 0)
 		.setNumber(9, 8, 0);
-	expect(Grid.fromString(firstRowFilled)).toEqual(frf);
+	const res2 = Grid.fromString(firstRowFilled);
+	expect(res2.err).toBeNull();
+	expect(res2.ok).toEqual(frf);
 
-	expect(() => {
-		const invalidSudokuString = '0'.repeat(80);
-		Grid.fromString(invalidSudokuString);
-	}).toThrow(new Error('Invalid sudoku string: provide a 81-length digits stream.'));
+	const invalidLengthSudokuString = "0".repeat(80);
+	const res3 = Grid.fromString(invalidLengthSudokuString);
+	expect(res3.ok).toBeNull();
+	expect(res3.err).toEqual(
+		"Invalid sudoku string: provide a 81-length digits stream."
+	);
 
-	expect(() => {
-		const invalidSudokuString = 'A' + '0'.repeat(80);
-		Grid.fromString(invalidSudokuString);
-	}).toThrow(new Error('Invalid sudoku string: all characters must be a 0 to 9 digit.'));
+	const invalidCharactersSudokuString = "A" + "0".repeat(80);
+	const res4 = Grid.fromString(invalidCharactersSudokuString);
+	expect(res4.ok).toBeNull();
+	expect(res4.err).toEqual(
+		"Invalid sudoku string: all characters must be a 0 to 9 digit."
+	);
 });
