@@ -61,4 +61,12 @@ export default class Grid {
 	public solved(): boolean {
 		return this.toString().includes("0") === false;
 	}
+
+	public traverseCells(callback: (c: Cell) => void): void {
+		for (let r = 0; r < 9; ++r) {
+			for (let c = 0; c < 9; ++c) {
+				callback(this.cells[r][c]);
+			}
+		}
+	}
 }

@@ -1,4 +1,5 @@
 import { Err, Ok, Result } from "../../utils/result";
+import Cell from "../cell";
 import Grid from "../grid";
 
 export type Env = {
@@ -6,7 +7,8 @@ export type Env = {
 	SOLVER_TIMEOUT_MS: string;
 };
 
-type SolverStrategy = (input: Grid) => Grid;
+type SolverStrategyResult = Grid | null;
+type SolverStrategy = (input: Grid) => SolverStrategyResult;
 
 const strategies: SolverStrategy[] = [
 	// Level 0
@@ -19,15 +21,25 @@ const strategies: SolverStrategy[] = [
 	// Level 3
 ];
 
-function cleanup(input: Grid): Grid {
+export function cleanup(input: Grid): SolverStrategyResult {
+	let changed = false;
+
+	let newGrid = input;
+	input.traverseCells((c: Cell) => {
+		if (c.candidates.length === 1) {
+			newGrid = newGrid.setNumber(c.candidates[0], c.column, c.row);
+			changed = true;
+		}
+	});
+
+	return changed ? newGrid : null;
+}
+
+function unique(input: Grid): SolverStrategyResult {
 	return input;
 }
 
-function unique(input: Grid): Grid {
-	return input;
-}
-
-function nakedSingle(input: Grid): Grid {
+function nakedSingle(input: Grid): SolverStrategyResult {
 	return input;
 }
 
@@ -49,7 +61,8 @@ export default class Solver {
 			return Err(copy.err);
 		}
 
-		let res = copy.ok as Grid;
+		let grid = copy.ok as Grid;
+		let res: SolverStrategyResult = grid;
 
 		do {
 			for (let idx in strategies) {
@@ -57,11 +70,16 @@ export default class Solver {
 					return Err("timeout");
 				}
 
-				res = strategies[idx](res);
+				res = strategies[idx](grid);
 				difficulty = Math.max(parseInt(idx), difficulty);
+
+				if (res) {
+					grid = res;
+					break;
+				}
 			}
 
-			if (res.solved()) {
+			if (res?.solved()) {
 				iterations++;
 				return Ok({
 					difficulty,
