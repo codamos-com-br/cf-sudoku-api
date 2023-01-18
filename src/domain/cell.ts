@@ -27,7 +27,12 @@ export default class Cell {
 	}
 
 	public setNumber(n: number): Cell {
-		return new Cell(this.column, this.row, [], n);
+		let candidates = [] as number[];
+		if (n === 0) {
+			candidates = [1, 2, 3, 4, 5, 6, 7, 8, 9];
+		}
+
+		return new Cell(this.column, this.row, candidates, n);
 	}
 
 	public dropCandidate(candidate: number): Cell {
