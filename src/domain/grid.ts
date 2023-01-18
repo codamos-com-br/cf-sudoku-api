@@ -57,4 +57,8 @@ export default class Grid {
 			.map((cells) => cells.map((c) => c.number).join(""))
 			.join("");
 	}
+
+	public solved(): boolean {
+		return this.toString().includes("0") === false;
+	}
 }

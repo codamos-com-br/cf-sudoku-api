@@ -1,3 +1,7 @@
 main = "./src/index.ts"
 name = "cf-sudoku-api"
 compatibility_date = "2022-07-26"
+
+[vars]
+MAX_SOLVING_ATTEMPTS=100
+SOLVER_TIMEOUT_MS=10

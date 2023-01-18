@@ -1,5 +1,9 @@
-import { handleRequest } from "./handler";
+import handleRequest from "./handler";
 
-addEventListener("fetch", (ev: FetchEvent) => {
-	ev.respondWith(handleRequest(ev.request));
-});
+export interface Env {}
+
+export default {
+	async fetch(req: Request, env: Env, _: ExecutionContext): Promise<Response> {
+		return await handleRequest(req, env);
+	},
+};

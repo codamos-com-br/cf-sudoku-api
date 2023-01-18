@@ -1,4 +1,5 @@
 import { IRequest, Router } from "itty-router";
+import { Env } from ".";
 import handleSolve from "./handlers/solver";
 
 const r = Router();
@@ -9,4 +10,4 @@ function notFoundHandler(req: IRequest): Response {
 
 r.post("/api/v1/solve", handleSolve).get("*", notFoundHandler);
 
-export const handleRequest = (req: Request) => r.handle(req);
+export default r.handle;

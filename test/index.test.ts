@@ -1,4 +1,4 @@
-import { handleRequest } from "../src/handler";
+import handleRequest from "../src/handler";
 
 test("Any other route returns 'Not found'", async () => {
 	const result = await handleRequest(
