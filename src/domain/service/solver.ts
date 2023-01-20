@@ -50,48 +50,46 @@ type SolverResult = {
 	time: number;
 };
 
-export default class Solver {
-	public static solve(input: Grid, env: Env): Result<SolverResult, string> {
-		const start = Date.now();
-		let iterations = 0;
-		let difficulty = 0;
+export default function solve(input: Grid, env: Env): Result<SolverResult, string> {
+	const start = Date.now();
+	let iterations = 0;
+	let difficulty = 0;
 
-		const copy = Grid.fromString(input.toString());
-		if (copy.err !== null) {
-			return Err(copy.err);
+	const copy = Grid.fromString(input.toString());
+	if (copy.err !== null) {
+		return Err(copy.err);
+	}
+
+	let grid = copy.ok as Grid;
+	let res: SolverStrategyResult = grid;
+
+	do {
+		for (let idx in strategies) {
+			if (Date.now() - start > parseInt(env.SOLVER_TIMEOUT_MS)) {
+				return Err("timeout");
+			}
+
+			res = strategies[idx](grid);
+			difficulty = Math.max(parseInt(idx), difficulty);
+
+			if (res) {
+				grid = res;
+				break;
+			}
 		}
 
-		let grid = copy.ok as Grid;
-		let res: SolverStrategyResult = grid;
-
-		do {
-			for (let idx in strategies) {
-				if (Date.now() - start > parseInt(env.SOLVER_TIMEOUT_MS)) {
-					return Err("timeout");
-				}
-
-				res = strategies[idx](grid);
-				difficulty = Math.max(parseInt(idx), difficulty);
-
-				if (res) {
-					grid = res;
-					break;
-				}
-			}
-
-			if (res?.solved()) {
-				iterations++;
-				return Ok({
-					difficulty,
-					grid: res,
-					iterations,
-					time: Date.now() - start,
-				});
-			}
-
+		if (res?.solved()) {
 			iterations++;
-		} while (iterations < parseInt(env.MAX_SOLVING_ATTEMPTS));
+			return Ok({
+				difficulty,
+				grid: res,
+				iterations,
+				time: Date.now() - start,
+			});
+		}
 
-		return Err("Sudoku grid is not solvable.");
-	}
+		iterations++;
+	} while (iterations < parseInt(env.MAX_SOLVING_ATTEMPTS));
+
+	return Err("Sudoku grid is not solvable.");
 }

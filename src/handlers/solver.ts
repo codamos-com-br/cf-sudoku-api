@@ -1,6 +1,6 @@
 import { IRequest } from "itty-router";
 import Grid from "../domain/grid";
-import Solver, { Env as SolverEnv } from "../domain/service/solver";
+import solve, { Env as SolverEnv } from "../domain/service/solver";
 
 export default async function handle(
 	req: IRequest,
@@ -13,7 +13,7 @@ export default async function handle(
 		return new Response(grid.err, { status: 400 });
 	}
 
-	const solved = Solver.solve(grid.ok, env);
+	const solved = solve(grid.ok, env);
 	if (solved.err !== null) {
 		if (solved.err === "timeout") {
 			return new Response("", { status: 408 });
