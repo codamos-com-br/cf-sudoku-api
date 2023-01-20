@@ -1,5 +1,6 @@
 import { Err, Ok, Result } from "../utils/result";
 import Cell from "./cell";
+import Unit from "./unit";
 
 export default class Grid {
 	public cells: Cell[][];
@@ -53,11 +54,15 @@ export default class Grid {
 		return this.toString().includes("0") === false;
 	}
 
-	public traverseCells(callback: (c: Cell) => void): void {
-		for (let r = 0; r < 9; ++r) {
-			for (let c = 0; c < 9; ++c) {
-				callback(this.cells[r][c]);
-			}
-		}
+	public cellsAtBox(i: number): Unit {
+		return new Unit(this.cells.flat().filter((c) => c.box === i));
+	}
+
+	public cellsAtRow(i: number): Unit {
+		return new Unit(this.cells[i]);
+	}
+
+	public cellsAtColumn(i: number): Unit {
+		return new Unit(this.cells.flat().filter((c) => c.column === i));
 	}
 }

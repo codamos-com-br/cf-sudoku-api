@@ -10,9 +10,10 @@ export type Env = {
 type SolverStrategyResult = Grid | null;
 type SolverStrategy = (input: Grid) => SolverStrategyResult;
 
-const strategies: SolverStrategy[] = [
+const strategies: ((g: Grid) => void)[] = [
 	// Level 0
-	cleanup,
+	boardCleanup,
+	cellCleanup,
 	unique,
 	nakedSingle,
 
@@ -21,47 +22,52 @@ const strategies: SolverStrategy[] = [
 	// Level 3
 ];
 
-export function cleanup(input: Grid): SolverStrategyResult {
-	let changed = false;
-
-	let newGrid = input;
-	input.traverseCells((c: Cell) => {
-		if (c.candidates.length === 1) {
-			c.setNumber(c.candidates[0]);
-			changed = true;
-		}
-	});
-
-	return changed ? newGrid : null;
+export function boardCleanup(input: Grid): void {
+	input.cells
+		.flat()
+		.filter((c) => c.number !== 0)
+		.forEach((c) => {
+			[
+				input.cellsAtBox(c.box).cells,
+				input.cellsAtColumn(c.column).cells,
+				input.cellsAtRow(c.row).cells,
+			]
+				.flat()
+				.forEach((neighbour) => {
+					neighbour.dropCandidate(c.number);
+				});
+		});
 }
 
-function unique(input: Grid): SolverStrategyResult {
-	return input;
+export function cellCleanup(input: Grid): void {
+	input.cells
+		.flat()
+		.filter((c) => c.candidates.length === 1)
+		.forEach((c) => c.setNumber(c.candidates[0]));
 }
 
-function nakedSingle(input: Grid): SolverStrategyResult {
-	return input;
-}
+function unique(input: Grid): void {}
+
+function nakedSingle(input: Grid): void {}
 
 type SolverResult = {
-	difficulty: number;
 	grid: Grid;
 	iterations: number;
 	time: number;
 };
 
-export default function solve(input: Grid, env: Env): Result<SolverResult, string> {
+export default function solve(
+	input: Grid,
+	env: Env
+): Result<SolverResult, string> {
+	const grid = Grid.fromString(input.toString()).ok as Grid;
 	const start = Date.now();
 	let iterations = 0;
-	let difficulty = 0;
 
 	const copy = Grid.fromString(input.toString());
 	if (copy.err !== null) {
 		return Err(copy.err);
 	}
-
-	let grid = copy.ok as Grid;
-	let res: SolverStrategyResult = grid;
 
 	do {
 		for (let idx in strategies) {
@@ -69,20 +75,13 @@ export default function solve(input: Grid, env: Env): Result<SolverResult, strin
 				return Err("timeout");
 			}
 
-			res = strategies[idx](grid);
-			difficulty = Math.max(parseInt(idx), difficulty);
-
-			if (res) {
-				grid = res;
-				break;
-			}
+			strategies[idx](grid);
 		}
 
-		if (res?.solved()) {
+		if (grid?.solved()) {
 			iterations++;
 			return Ok({
-				difficulty,
-				grid: res,
+				grid,
 				iterations,
 				time: Date.now() - start,
 			});

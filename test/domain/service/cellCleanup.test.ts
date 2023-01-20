@@ -1,11 +1,5 @@
 import Grid from "../../../src/domain/grid";
-import { cleanup } from "../../../src/domain/service/solver";
-
-test("Cleanup does nothing", () => {
-	const res = cleanup(Grid.empty());
-
-	expect(res).toBeNull();
-});
+import { cellCleanup } from "../../../src/domain/service/solver";
 
 test("Cleanup strategy resolve 1-candidate cells", () => {
 	const cells = Grid.empty().cells;
@@ -21,8 +15,7 @@ test("Cleanup strategy resolve 1-candidate cells", () => {
 	cells[0][0] = cell;
 
 	const g = new Grid(cells);
-	const res = cleanup(g);
+	cellCleanup(g);
 
-	expect(res).not.toBeNull();
-	expect(res?.toString()).toBe("9" + "0".repeat(80));
+	expect(g.toString()).toBe("9" + "0".repeat(80));
 });
