@@ -10,12 +10,10 @@ test("Empty grid creates cells", () => {
 
 test("Grid to string serialisation", () => {
 	const g = Grid.empty();
-
 	expect(g.toString()).toBe("0".repeat(81));
 
-	const g1 = g.setNumber(7, 0, 0);
-	expect(g1).not.toEqual(g);
-	expect(g1.toString()).toBe("7" + "0".repeat(80));
+	g.cells[0][0].setNumber(7);
+	expect(g.toString()).toBe("7" + "0".repeat(80));
 });
 
 test("From string deserialisation", () => {
@@ -25,16 +23,17 @@ test("From string deserialisation", () => {
 	expect(res.ok).toEqual(Grid.empty());
 
 	const firstRowFilled = "123456789" + "0".repeat(72);
-	const frf = Grid.empty()
-		.setNumber(1, 0, 0)
-		.setNumber(2, 1, 0)
-		.setNumber(3, 2, 0)
-		.setNumber(4, 3, 0)
-		.setNumber(5, 4, 0)
-		.setNumber(6, 5, 0)
-		.setNumber(7, 6, 0)
-		.setNumber(8, 7, 0)
-		.setNumber(9, 8, 0);
+	const frf = Grid.empty();
+	frf.cells[0][0].setNumber(1);
+	frf.cells[0][1].setNumber(2);
+	frf.cells[0][2].setNumber(3);
+	frf.cells[0][3].setNumber(4);
+	frf.cells[0][4].setNumber(5);
+	frf.cells[0][5].setNumber(6);
+	frf.cells[0][6].setNumber(7);
+	frf.cells[0][7].setNumber(8);
+	frf.cells[0][8].setNumber(9);
+
 	const res2 = Grid.fromString(firstRowFilled);
 	expect(res2.err).toBeNull();
 	expect(res2.ok).toEqual(frf);

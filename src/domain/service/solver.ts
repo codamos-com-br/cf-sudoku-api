@@ -27,7 +27,7 @@ export function cleanup(input: Grid): SolverStrategyResult {
 	let newGrid = input;
 	input.traverseCells((c: Cell) => {
 		if (c.candidates.length === 1) {
-			newGrid = newGrid.setNumber(c.candidates[0], c.column, c.row);
+			c.setNumber(c.candidates[0]);
 			changed = true;
 		}
 	});

@@ -12,18 +12,15 @@ test("Box calculation", () => {
 });
 
 test("Dropping candidates", () => {
-	const c = new Cell(0, 0);
+	const c = new Cell(0, 0).dropCandidate(1).dropCandidate(2).dropCandidate(3);
 
-	const c2 = c.dropCandidate(1).dropCandidate(2).dropCandidate(3);
-
-	expect(c2.candidates).toEqual([4, 5, 6, 7, 8, 9]);
+	expect(c.candidates).toEqual([4, 5, 6, 7, 8, 9]);
 });
 
 test("Setting a cell's number", () => {
 	const c = new Cell(0, 0);
+	c.setNumber(5);
 
-	const c2 = c.setNumber(5);
-
-	expect(c2.candidates).toEqual([]);
-	expect(c2.number).toBe(5);
+	expect(c.candidates).toEqual([]);
+	expect(c.number).toBe(5);
 });

@@ -2,7 +2,7 @@ import { Err, Ok, Result } from "../utils/result";
 import Cell from "./cell";
 
 export default class Grid {
-	public readonly cells: Cell[][];
+	public cells: Cell[][];
 
 	constructor(cells: Cell[][]) {
 		this.cells = cells;
@@ -16,15 +16,6 @@ export default class Grid {
 				cells[r].push(new Cell(c, r));
 			}
 		}
-
-		return new Grid(cells);
-	}
-
-	public setNumber(n: number, col: number, row: number): Grid {
-		const cells = this.cells.map((rows) =>
-			rows.map((c) => new Cell(c.column, c.row, c.candidates, c.number))
-		);
-		cells[row][col] = cells[row][col].setNumber(n);
 
 		return new Grid(cells);
 	}
@@ -45,7 +36,7 @@ export default class Grid {
 					);
 				}
 
-				res.cells[r][c] = new Cell(c, r).setNumber(parseInt(sudoku[i++]));
+				res.cells[r][c].setNumber(parseInt(sudoku[i++]));
 			}
 		}
 

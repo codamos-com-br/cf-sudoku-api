@@ -2,8 +2,8 @@ export default class Cell {
 	public readonly column: number;
 	public readonly row: number;
 	public readonly box: number;
-	public readonly number: number;
-	public readonly candidates: number[];
+	public number: number;
+	public candidates: number[];
 
 	constructor(
 		column: number,
@@ -32,14 +32,13 @@ export default class Cell {
 			candidates = [1, 2, 3, 4, 5, 6, 7, 8, 9];
 		}
 
-		return new Cell(this.column, this.row, candidates, n);
+		this.candidates = candidates;
+		this.number = n;
+		return this;
 	}
 
 	public dropCandidate(candidate: number): Cell {
-		return new Cell(
-			this.column,
-			this.row,
-			this.candidates.filter((c) => c !== candidate)
-		);
+		this.candidates = this.candidates.filter((c) => c !== candidate);
+		return this;
 	}
 }
