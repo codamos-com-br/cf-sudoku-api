@@ -28,12 +28,16 @@ export function boardCleanup(input: Grid): void {
 		.filter((c) => c.number !== 0)
 		.forEach((c) => {
 			[
-				input.cellsAtBox(c.box).cells,
-				input.cellsAtColumn(c.column).cells,
-				input.cellsAtRow(c.row).cells,
+				input.boxes.get(c.box)?.cells,
+				input.rows.get(c.row)?.cells,
+				input.columns.get(c.column)?.cells,
 			]
 				.flat()
 				.forEach((neighbour) => {
+					if (neighbour === undefined) {
+						return;
+					}
+
 					neighbour.dropCandidate(c.number);
 				});
 		});
@@ -46,7 +50,36 @@ export function cellCleanup(input: Grid): void {
 		.forEach((c) => c.setNumber(c.candidates[0]));
 }
 
-function unique(input: Grid): void {}
+export function unique(input: Grid): void {
+	for (let c of input.cells.flat()) {
+		if (c.number > 0) {
+			continue;
+		}
+
+		for (let n of c.candidates) {
+			if (
+				!input.boxes
+					.get(c.box)
+					?.without(c)
+					.cells.flatMap((c2) => c2.candidates)
+					.includes(n) ||
+				!input.rows
+					.get(c.row)
+					?.without(c)
+					.cells.flatMap((c2) => c2.candidates)
+					.includes(n) ||
+				!input.columns
+					.get(c.column)
+					?.without(c)
+					.cells.flatMap((c2) => c2.candidates)
+					.includes(n)
+			) {
+				c.setNumber(n);
+				break;
+			}
+		}
+	}
+}
 
 function nakedSingle(input: Grid): void {}
 
