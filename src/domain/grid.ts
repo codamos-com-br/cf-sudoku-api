@@ -4,9 +4,24 @@ import Unit from "./unit";
 
 export default class Grid {
 	public cells: Cell[][];
+	public boxes: Map<number, Unit>;
+	public rows: Map<number, Unit>;
+	public columns: Map<number, Unit>;
 
 	constructor(cells: Cell[][]) {
 		this.cells = cells;
+		this.boxes = new Map();
+		this.rows = new Map();
+		this.columns = new Map();
+
+		for (let i = 0; i < 9; ++i) {
+			this.boxes.set(i, new Unit(this.cells.flat().filter((c) => c.box === i)));
+			this.rows.set(i, new Unit(this.cells.flat().filter((c) => c.row === i)));
+			this.columns.set(
+				i,
+				new Unit(this.cells.flat().filter((c) => c.column === i))
+			);
+		}
 	}
 
 	static empty(): Grid {
@@ -52,17 +67,5 @@ export default class Grid {
 
 	public solved(): boolean {
 		return this.toString().includes("0") === false;
-	}
-
-	public cellsAtBox(i: number): Unit {
-		return new Unit(this.cells.flat().filter((c) => c.box === i));
-	}
-
-	public cellsAtRow(i: number): Unit {
-		return new Unit(this.cells[i]);
-	}
-
-	public cellsAtColumn(i: number): Unit {
-		return new Unit(this.cells.flat().filter((c) => c.column === i));
 	}
 }

@@ -8,7 +8,7 @@ test("Unit tells which numbers are missing", () => {
 		)
 	);
 
-	expect(u.candidates).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+	expect(u.candidates()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
 	const u2 = new Unit(
 		[
@@ -23,7 +23,7 @@ test("Unit tells which numbers are missing", () => {
 			{ col: 8, row: 0, candidates: [] },
 		].map(({ col, row, candidates }) => new Cell(col, row, candidates))
 	);
-	expect(u2.candidates).toEqual([1, 2, 3, 5]);
+	expect(u2.candidates()).toEqual([1, 2, 3, 5]);
 });
 
 test("Unit tells which numbers are present", () => {
@@ -33,7 +33,7 @@ test("Unit tells which numbers are present", () => {
 		)
 	);
 
-	expect(u.candidates).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
+	expect(u.candidates()).toEqual([1, 2, 3, 4, 5, 6, 7, 8, 9]);
 
 	const u2 = new Unit(
 		[

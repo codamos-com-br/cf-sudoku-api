@@ -86,7 +86,8 @@ test("POST /api/v1/solve returns 500", async () => {
 				method: "POST",
 			}
 		),
-		defaultEnv
+		// @TODO: remove timeout override once the algorithms are optimised
+		{ ...defaultEnv, SOLVER_TIMEOUT_MS: 100 }
 	);
 
 	expect(res.status).toBe(500);

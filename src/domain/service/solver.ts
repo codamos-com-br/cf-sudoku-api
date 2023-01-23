@@ -28,12 +28,16 @@ export function boardCleanup(input: Grid): void {
 		.filter((c) => c.number !== 0)
 		.forEach((c) => {
 			[
-				input.cellsAtBox(c.box).cells,
-				input.cellsAtColumn(c.column).cells,
-				input.cellsAtRow(c.row).cells,
+				input.boxes.get(c.box)?.cells,
+				input.rows.get(c.row)?.cells,
+				input.columns.get(c.column)?.cells,
 			]
 				.flat()
 				.forEach((neighbour) => {
+					if (neighbour === undefined) {
+						return;
+					}
+
 					neighbour.dropCandidate(c.number);
 				});
 		});
@@ -46,7 +50,52 @@ export function cellCleanup(input: Grid): void {
 		.forEach((c) => c.setNumber(c.candidates[0]));
 }
 
-function unique(input: Grid): void {}
+export function unique(input: Grid): void {
+	type OccurrenceMap = { [candidate: number]: number };
+	type UnitOccurrenceMap = { [unit: number]: OccurrenceMap };
+
+	const map: { [unitType: string]: UnitOccurrenceMap } = {
+		box: {},
+		col: {},
+		row: {},
+	};
+
+	// Zeroes the map
+	for (let i = 0; i < 9; ++i) {
+		map.box[i] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
+		map.col[i] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
+		map.row[i] = { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0 };
+	}
+
+	// Fill the map
+	for (let i = 0; i < 9; ++i) {
+		input.boxes
+			.get(i)
+			?.cells.flatMap((c) => c.candidates)
+			.forEach((n) => map.box[i][n]++);
+		input.rows
+			.get(i)
+			?.cells.flatMap((c) => c.candidates)
+			.forEach((n) => map.row[i][n]++);
+		input.columns
+			.get(i)
+			?.cells.flatMap((c) => c.candidates)
+			.forEach((n) => map.col[i][n]++);
+	}
+
+	for (let c of input.cells.flat().filter((c) => c.number === 0)) {
+		for (let n of c.candidates) {
+			if (
+				map.box[c.box][n] === 1 ||
+				map.row[c.row][n] === 1 ||
+				map.col[c.column][n] === 1
+			) {
+				c.setNumber(n);
+				break;
+			}
+		}
+	}
+}
 
 function nakedSingle(input: Grid): void {}
 

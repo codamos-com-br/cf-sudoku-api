@@ -7,7 +7,7 @@ test("Setting a number removes it from neighbour cells", () => {
 
 	boardCleanup(g);
 
-	expect(g.cellsAtBox(0).candidates.includes(5)).toBeFalsy();
-	expect(g.cellsAtRow(0).candidates.includes(5)).toBeFalsy();
-	expect(g.cellsAtColumn(0).candidates.includes(5)).toBeFalsy();
+	expect(g.boxes.get(0)?.candidates().includes(5)).toBeFalsy();
+	expect(g.rows.get(0)?.candidates().includes(5)).toBeFalsy();
+	expect(g.columns.get(0)?.candidates().includes(5)).toBeFalsy();
 });
